@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:fish_detector/controller/auth_controller.dart';
 import 'package:fish_detector/utils/text_styles.dart';
 import 'package:fish_detector/views/bottom_nav_bar.dart';
+import 'package:fish_detector/views/singn_up_screen.dart';
 import 'package:fish_detector/widgets/custom_button.dart';
 import 'package:fish_detector/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
@@ -113,6 +114,31 @@ class _SignInScreenState extends State<SignInScreen> {
                       }
                     }
                   }),
+              const SizedBox(height: 20),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 15),
+                child: const Divider(
+                  color: Colors.grey,
+                  thickness: 1,
+                  height: 20,
+                ),
+              ),
+              const Text(
+                'Dont have an Account?',
+                textAlign: TextAlign.center,
+                style: TextStyles.subHeader,
+              ),
+              const SizedBox(height: 150),
+              const Text(
+                'Create your Account?',
+                textAlign: TextAlign.center,
+                style: TextStyles.subHeader,
+              ),
+              CustomButton(
+                  title: 'Sign up',
+                  onPressed: () {
+                    Get.to(const SignUpScreen());
+                  })
             ],
           ),
         ),

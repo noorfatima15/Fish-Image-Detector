@@ -38,7 +38,19 @@ class TextStyles {
     fontWeight: FontWeight.w400,
     color: Colors.black,
   );
-  static TextStyle aboutDescriptionText = TextStyle(
+  static const TextStyle boldDescription = TextStyle(
+    fontSize: 16,
+    fontFamily: 'Poppins',
+    fontWeight: FontWeight.w700,
+    color: Colors.black,
+  );
+  static const TextStyle userName = TextStyle(
+    fontSize: 26,
+    fontFamily: 'Poppins',
+    fontWeight: FontWeight.w400,
+    color: Colors.black,
+  );
+  static TextStyle descriptionContent = TextStyle(
     fontSize: 14,
     fontFamily: 'Poppins',
     fontWeight: FontWeight.w400,

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fish_detector/controller/auth_controller.dart';
 import 'package:fish_detector/utils/text_styles.dart';
 import 'package:fish_detector/views/bottom_nav_bar.dart';
+import 'package:fish_detector/views/signin_screen.dart';
 import 'package:fish_detector/widgets/custom_button.dart';
 import 'package:fish_detector/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
@@ -154,6 +155,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   }
                 },
               ),
+              const SizedBox(height: 20),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 15),
+                child: const Divider(
+                  color: Colors.grey,
+                  thickness: 1,
+                  height: 20,
+                ),
+              ),
+              const Text(
+                'Already have an Account?',
+                textAlign: TextAlign.center,
+                style: TextStyles.subHeader,
+              ),
+              const SizedBox(height: 150),
+              CustomButton(
+                  title: 'Sign In',
+                  onPressed: () {
+                    Get.to(const SignInScreen());
+                  })
             ],
           ),
         ),
