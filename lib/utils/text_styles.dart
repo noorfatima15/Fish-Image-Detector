@@ -26,6 +26,12 @@ class TextStyles {
     fontWeight: FontWeight.w700,
     color: Colors.cyan,
   );
+  static const TextStyle profileCharacter = TextStyle(
+    fontSize: 100,
+    fontFamily: 'Poppins',
+    fontWeight: FontWeight.w700,
+    color: Colors.white,
+  );
   static const TextStyle subHeader = TextStyle(
     fontSize: 16,
     fontFamily: 'Poppins',

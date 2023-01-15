@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/firebase_constants.dart';
 
@@ -11,21 +10,31 @@ class AuthController extends GetxController {
   static AuthController instance = AuthController();
   Rxn<User> _firebaseUser = Rxn<User>();
   User? get user => _firebaseUser.value;
-  RxString email = ''.obs;
-  RxString password = ''.obs;
+  RxString userEmail = ''.obs;
+  RxString userPassword = ''.obs;
   RxString userTitle = ''.obs;
   RxString initialCharacter = ''.obs;
-  Future<void> saveUser(String userName, String email, String password) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('userName', userName);
-    prefs.setString('userEmail', email);
-    prefs.setString('userPassword', password);
-    userTitle.value = userName;
+
+  void extractInitialCharacter() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+
+    var list = sp.getString('userName').toString().split('');
+    sp.setString('initialCharacter', list.first);
+    initialCharacter.value = list.first;
+    sp.get('initialCharacter');
   }
 
-  void extractInitialCharacter() {
-    var list = userTitle.split('');
-    initialCharacter.value = list.first;
+  void saveUserData(String userName, String email, String password) async {
+    userTitle.value = userName;
+    userEmail.value = email;
+    userPassword.value = password;
+  }
+
+  void getUserData() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    userTitle.value = sp.getString('userName').toString();
+    userEmail.value = sp.getString('userEmail').toString();
+    userPassword.value = sp.getString('userPassword').toString();
   }
 
   //function for save uid from firebase
@@ -39,6 +48,8 @@ class AuthController extends GetxController {
   @override
   void onInit() {
     _firebaseUser.bindStream(auth.authStateChanges());
+    extractInitialCharacter();
+
     super.onInit();
   }
 
@@ -52,10 +63,10 @@ class AuthController extends GetxController {
           content: Text('The password provided is too weak.'),
         );
       } else if (e.code == 'email-already-in-use') {
-        SnackBar(content: Text('The account already exists for that email.'));
+        const SnackBar(content: Text('The account already exists for that email.'));
       }
     } catch (e) {
-      print(e);
+      SnackBar(content: Text(e.toString()));
     }
   }
 

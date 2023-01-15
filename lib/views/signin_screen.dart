@@ -1,27 +1,37 @@
 import 'dart:async';
-
 import 'package:fish_detector/controller/auth_controller.dart';
 import 'package:fish_detector/utils/text_styles.dart';
 import 'package:fish_detector/views/bottom_nav_bar.dart';
-import 'package:fish_detector/views/home_screen.dart';
 import 'package:fish_detector/widgets/custom_button.dart';
 import 'package:fish_detector/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
-import '../constants/firebase_constants.dart';
+class SignInScreen extends StatefulWidget {
+  const SignInScreen({Key? key}) : super(key: key);
 
-class SignInScreen extends StatelessWidget {
-  SignInScreen({Key? key}) : super(key: key);
+  @override
+  State<SignInScreen> createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
   final StreamController<bool> _passVisibility = StreamController<bool>();
+
   final TextEditingController _emailController = TextEditingController();
+
   final TextEditingController _passwordController = TextEditingController();
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final AuthController _authController = Get.put(AuthController());
+
+  @override
+  void initState() {
+    _authController.getUserData();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    AuthController _authController = Get.put(AuthController());
     return Scaffold(
       backgroundColor: Colors.cyan,
       body: SafeArea(
@@ -57,6 +67,7 @@ class SignInScreen extends StatelessWidget {
                   if (value.contains('#')) {
                     return 'Please enter a valid email';
                   }
+
                   return null;
                 },
               ),
@@ -91,8 +102,15 @@ class SignInScreen extends StatelessWidget {
                   title: 'Sign In',
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      _authController.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
-                      Get.offAll(BottomNavBar());
+                      if (_authController.userEmail.value == _emailController.text &&
+                          _authController.userPassword.value == _passwordController.text) {
+                        _authController.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
+                        Get.offAll(BottomNavBar());
+                      } else {
+                        const SnackBar(
+                          content: Text('Invalid Email or password'),
+                        );
+                      }
                     }
                   }),
             ],

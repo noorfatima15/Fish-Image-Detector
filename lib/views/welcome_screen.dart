@@ -17,38 +17,38 @@ class WelcomeScreen extends StatelessWidget {
         child: Center(
           child: ListView(
             children: [
-              SizedBox(height: 150),
-              Text(
+              const SizedBox(height: 150),
+              const Text(
                 'Welcome',
                 textAlign: TextAlign.center,
                 style: TextStyles.header,
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'Sign in or register yourself in order to continue',
                 textAlign: TextAlign.center,
                 style: TextStyles.subHeader,
               ),
-              SizedBox(height: 100),
+              const SizedBox(height: 100),
               CustomButton(
                 title: 'Sign In',
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => SignInScreen(),
+                      builder: (context) => const SignInScreen(),
                     ),
                   );
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               CustomButton(
                 title: 'Sign Up',
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => SignUpScreen(),
+                      builder: (context) => const SignUpScreen(),
                     ),
                   );
                 },

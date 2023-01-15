@@ -7,18 +7,34 @@ import 'package:fish_detector/widgets/custom_button.dart';
 import 'package:fish_detector/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class SignUpScreen extends StatelessWidget {
-  SignUpScreen({Key? key}) : super(key: key);
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({Key? key}) : super(key: key);
+
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
   final StreamController<bool> _passVisibility = StreamController<bool>();
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   final TextEditingController _emailController = TextEditingController();
+
   final TextEditingController _passwordController = TextEditingController();
+
   final TextEditingController _userName = TextEditingController();
+  final AuthController _authController = Get.put(AuthController());
+  void saveData() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+
+    _authController.saveUserData(sp.getString('userName').toString(), sp.getString('userEmail').toString(), sp.getString('userPassword').toString());
+  }
+
   @override
   Widget build(BuildContext context) {
-    final AuthController _authController = Get.put(AuthController());
     return Scaffold(
       backgroundColor: Colors.cyan,
       body: SafeArea(
@@ -26,8 +42,8 @@ class SignUpScreen extends StatelessWidget {
           key: _formKey,
           child: ListView(
             children: [
-              SizedBox(height: 80),
-              Text(
+              const SizedBox(height: 80),
+              const Text(
                 'Sign Up',
                 textAlign: TextAlign.center,
                 style: TextStyles.header,
@@ -111,17 +127,29 @@ class SignUpScreen extends StatelessWidget {
                   }),
               CustomButton(
                 title: 'Sign Up',
-                onPressed: () {
+                onPressed: () async {
                   //implement sign up logic
+                  SharedPreferences sp = await SharedPreferences.getInstance();
+
                   if (_formKey.currentState!.validate()) {
-                    _authController.createUserWithEmailAndPassword(
-                      email: _emailController.text,
-                      password: _passwordController.text,
-                    );
-                    _authController.saveUser(_userName.text, _emailController.text, _passwordController.text);
+                    if (_authController.userEmail.value != _emailController.text) {
+                      _authController.createUserWithEmailAndPassword(
+                        email: _emailController.text,
+                        password: _passwordController.text,
+                      );
+                      Get.offAll(BottomNavBar());
+                    } else {
+                      const SnackBar(
+                        content: Text('Email is Already exist'),
+                      );
+                    }
                     _authController.saveUid();
                     _authController.extractInitialCharacter();
-
+                    sp.setString('userName', _userName.text);
+                    sp.setString('userEmail', _emailController.text);
+                    sp.setString('userPassword', _passwordController.text);
+                    _authController.saveUserData(
+                        sp.getString('userName').toString(), sp.getString('userEmail').toString(), sp.getString('userPassword').toString());
                     Get.offAll(BottomNavBar());
                   }
                 },
