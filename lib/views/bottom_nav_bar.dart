@@ -1,20 +1,65 @@
+import 'dart:io';
 import 'package:fish_detector/controller/data_controller.dart';
 import 'package:fish_detector/controller/navigation_controller.dart';
 import 'package:fish_detector/views/about_screen.dart';
 import 'package:fish_detector/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tflite/flutter_tflite.dart';
 import 'package:get/get.dart';
 import '../widgets/navigation_tab.dart';
 import 'home_screen.dart';
 import 'package:image_picker/image_picker.dart';
 
-class BottomNavBar extends StatelessWidget {
+class BottomNavBar extends StatefulWidget {
   BottomNavBar({Key? key}) : super(key: key);
-  List<Widget> screens = [const HomeScreen(), const AboutScreen()];
-  final NavigationController _navigationController = Get.put(NavigationController());
-  final ImagePicker _picker = ImagePicker();
 
   @override
+  State<BottomNavBar> createState() => _BottomNavBarState();
+}
+
+class _BottomNavBarState extends State<BottomNavBar> {
+  List<Widget> screens = [const HomeScreen(), const AboutScreen()];
+  final ImageDataController imageDataController = Get.put(ImageDataController());
+  final NavigationController _navigationController = Get.put(NavigationController());
+  bool isLoading = true;
+  final ImagePicker _picker = ImagePicker();
+  File? _image;
+  var _output;
+  @override
+  void initState() {
+    super.initState();
+    loadModel().then((value) {
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
+
+  Future loadModel() async {
+    await Tflite.loadModel(
+        model: 'assets/vww_96_grayscale_quantized.tflite',
+        labels: 'assets/labels.txt',
+        numThreads: 1, // defaults to 1
+        isAsset: true, // defaults to true, set to false to load resources outside assets
+        useGpuDelegate: false //
+        );
+  }
+
+  classifyImage(File image) {
+    var output = Tflite.runModelOnImage(
+        path: image.path,
+        imageMean: 0.0, // defaults to 117.0
+        imageStd: 255.0, // defaults to 1.0
+        numResults: 2, // defaults to 5
+        threshold: 0.2, // defaults to 0.1
+        asynch: true);
+    setState(() {
+      isLoading = false;
+      _output = output;
+      imageDataController.pickedImageFile.value = _output;
+    });
+  }
+
   Widget build(BuildContext context) {
     MediaQueryData mediaQuery = MediaQuery.of(context);
     return Scaffold(
@@ -85,12 +130,35 @@ class BottomNavBar extends StatelessWidget {
                                       CustomButton(
                                           title: 'Camera',
                                           onPressed: () async {
-                                            final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
+                                            //   final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
+                                            //   File image = File(photo!.path);
+                                            //   if (image == null) return null;
+                                            //   setState(() {
+                                            //     isLoading = true;
+                                            //     _image = image;
+                                            //     imageDataController.pickedImage = _image;
+                                            //   });
+                                            //   classifyImage(_image!);
+                                            // })
+                                            imageDataController.pickImageFromGallery();
                                           }),
                                       CustomButton(
                                           title: 'Pick Up From Gallery',
                                           onPressed: () async {
                                             final XFile? photo = await _picker.pickImage(source: ImageSource.gallery);
+                                            File image = File(photo!.path);
+                                            if (image == null) return null;
+                                            setState(() {
+                                              isLoading = true;
+                                              _image = image;
+                                              imageDataController.pickedImage = _image;
+                                              imageDataController.pickedImageFile.value.first = _output;
+                                            });
+                                            classifyImage(_image!);
+                                            print('Image Picked ${image.path}');
+                                            print('output $_output');
+                                            // Get.to(HomeScreen());
+                                            Navigator.of(context).pop();
                                           }),
                                     ],
                                   ),

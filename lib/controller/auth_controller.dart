@@ -83,7 +83,9 @@ class AuthController extends GetxController {
   }
 
   void signOut() async {
-    await auth.signOut();
+    // await auth.signOut();
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    sp.clear();
   }
 
   void saveUserToFirebase() async {
