@@ -1,0 +1,8 @@
+0 Black Sea Sprat
+1 Hourse Mackarel
+2 Red Mullet
+3 Red Sea Bream
+4 Sea Bass
+5 Shrimp
+6 Striped Red Mullet
+7 Trout
